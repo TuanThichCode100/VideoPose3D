@@ -98,7 +98,7 @@ for subject in keypoints.keys():
 
 subjects_train = args.subjects_train.split(',')
 subjects_semi = [] if not args.subjects_unlabeled else args.subjects_unlabeled.split(',')
-if not args.render:
+if not args.render and not args.viz_export:
     subjects_test = args.subjects_test.split(',')
 else:
     subjects_test = [args.viz_subject]
@@ -197,7 +197,9 @@ for parameter in model_pos.parameters():
     model_params += parameter.numel()
 print('INFO: Trainable parameter count:', model_params)
 
-if torch.cuda.is_available():
+use_cuda = torch.cuda.is_available() and not args.force_cpu
+
+if use_cuda:
     model_pos = model_pos.cuda()
     model_pos_train = model_pos_train.cuda()
     
@@ -214,7 +216,7 @@ if args.resume or args.evaluate:
         model_traj = TemporalModel(poses_valid_2d[0].shape[-2], poses_valid_2d[0].shape[-1], 1,
                             filter_widths=filter_widths, causal=args.causal, dropout=args.dropout, channels=args.channels,
                             dense=args.dense)
-        if torch.cuda.is_available():
+        if use_cuda:
             model_traj = model_traj.cuda()
         model_traj.load_state_dict(checkpoint['model_traj'])
     else:
@@ -662,7 +664,7 @@ def evaluate(test_generator, action=None, return_predictions=False, use_trajecto
         N = 0
         for _, batch, batch_2d in test_generator.next_epoch():
             inputs_2d = torch.from_numpy(batch_2d.astype('float32'))
-            if torch.cuda.is_available():
+            if use_cuda:
                 inputs_2d = inputs_2d.cuda()
 
             # Positional model
@@ -683,7 +685,7 @@ def evaluate(test_generator, action=None, return_predictions=False, use_trajecto
                 return predicted_3d_pos.squeeze(0).cpu().numpy()
                 
             inputs_3d = torch.from_numpy(batch.astype('float32'))
-            if torch.cuda.is_available():
+            if use_cuda:
                 inputs_3d = inputs_3d.cuda()
             inputs_3d[:, :, 0] = 0    
             if test_generator.augment_enabled():
@@ -721,8 +723,8 @@ def evaluate(test_generator, action=None, return_predictions=False, use_trajecto
     return e1, e2, e3, ev
 
 
-if args.render:
-    print('Rendering...')
+if args.render or (args.viz_export is not None):
+    print('Rendering / Exporting...')
     
     input_keypoints = keypoints[args.viz_subject][args.viz_action][args.viz_camera].copy()
     ground_truth = None
@@ -743,7 +745,10 @@ if args.render:
     if args.viz_export is not None:
         print('Exporting joint positions to', args.viz_export)
         # Predictions are in camera space
-        np.save(args.viz_export, prediction)
+        if args.viz_export.endswith('.npz'):
+            np.savez_compressed(args.viz_export, positions_3d=prediction)
+        else:
+            np.save(args.viz_export, prediction)
     
     if args.viz_output is not None:
         if ground_truth is not None:

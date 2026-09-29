@@ -1,0 +1,65 @@
+# Byte-compiled / optimized / URL files
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+
+# Video formats
+*.mp4
+*.avi
+*.mov
+*.mkv
+*.flv
+*.wmv
+*.webm
+*.m4v
+*.mpg
+*.mpeg
+*.3gp
+
+# Video directories / Output
+inference/videos/*
+!inference/videos/.gitkeep
+inference/output/*
+!inference/output/.gitkeep
+
+# Model weights & Checkpoints
+checkpoint/
+*.pt
+*.pth
+*.ckpt
+*.bin
+*.weights
+*.onnx
+
+# Data & NumPy arrays / Cache
+*.npz
+*.npy
+*.pkl
+*.pickle
+*.h5
+*.hdf5
+
+# Environments
+.env
+.venv
+env/
+venv/
+ENV/
+env.bak/
+venv.bak/
+
+# IDE & Editors
+.vscode/
+.idea/
+*.sublime-project
+*.sublime-workspace
+
+# Logs & Jupyter Notebooks
+*.log
+.ipynb_checkpoints/
+
+# OS generated files
+.DS_Store
+Thumbs.db

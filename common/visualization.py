@@ -37,7 +37,7 @@ def read_video(filename, skip=0, limit=-1):
             '-i', filename,
             '-f', 'image2pipe',
             '-pix_fmt', 'rgb24',
-            '-vsync', '0',
+            '-fps_mode', 'passthrough',
             '-vcodec', 'rawvideo', '-']
     
     i = 0

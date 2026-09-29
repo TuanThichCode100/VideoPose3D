@@ -1,0 +1,15 @@
+# Core dependencies
+torch>=1.0.0
+numpy>=1.15.0
+scipy>=1.1.0
+h5py>=2.8.0
+
+# Visualization & export
+matplotlib>=3.0.0
+
+# Dataset preparation & processing
+cdflib>=0.3.16
+
+# 2D Pose Inference (Replacement for Detectron/Detectron2)
+mediapipe>=0.10.0
+opencv-python>=4.5.0
